@@ -49,6 +49,8 @@ asked to frame; the value inside is still byte for byte.
 npm install md-render
 ```
 
+Node 20 or newer.
+
 ## Quick Start
 
 Create a template file with `{{variable}}` placeholders:
@@ -175,6 +177,8 @@ passes every one.
 | `text.maxChars(n)` | Values over `n` UTF-16 code units, the unit `String.length` uses. |
 
 ```typescript
+import { allOf, defineTemplate, text } from 'md-render';
+
 const evaluatorPrompt = defineTemplate(templatePath('evaluator.md'), {
     task: allOf(text.plain, text.maxBytes(8_000)),
     rubric: text.noFence,

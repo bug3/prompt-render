@@ -29,7 +29,8 @@
   },
   "sideEffects": false,
   "files": [
-    "dist"
+    "dist",
+    "llms.txt"
   ],
   "scripts": {
     "build": "tsup",
@@ -37,7 +38,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc -p tsconfig.json",
     "lint": "eslint src/ tests/",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run lint && npm run typecheck && npm test && npm run build"
   },
   "keywords": [
     "markdown",
