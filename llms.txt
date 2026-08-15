@@ -1,0 +1,130 @@
+# md-render
+
+> Type-safe `{{variable}}` renderer for prompt files
+
+md-render is a TypeScript library for rendering plain-text template files with
+`{{token}}` substitution, schema validation at module load, and fail-closed
+behaviour. Values are inserted verbatim. The package does not parse markdown.
+
+See the Decisions section of README.md for the locked decisions: independent of
+sql-render, file-first with a string seam, no frontmatter, public digest, no
+untyped mode, round-trip byte safety, opt-in safety descriptors, and guards
+over the template file.
+
+## Install
+
+```bash
+npm install md-render
+```
+
+## API
+
+### defineTemplate
+
+```typescript
+import { defineTemplate, text } from 'md-render';
+
+const prompt = defineTemplate('./generation.md', {
+  task: text.required,
+  outputDir: text.absolutePath,
+  resultSchema: text.block,
+});
+
+const { markdown, digest, bytes } = prompt({ task, outputDir, resultSchema });
+prompt.digest; // sha256 hex of the raw file bytes
+prompt.path;   // resolved absolute path
+prompt.tokens; // unique names, first-appearance order
+```
+
+Schema keys must match template tokens at define time. Types are inferred via
+`InferParams<S>`. There is no untyped generic mode.
+
+The result's `digest` is sha256 hex of the rendered UTF-8 bytes and `bytes` is
+their length; both are computed on first access.
+
+An optional third argument takes `{ guards }`.
+
+### defineStringTemplate
+
+```typescript
+import { defineStringTemplate, text } from 'md-render';
+
+const greet = defineStringTemplate('Hello {{name}}\n', {
+  name: text.required,
+}, { label: 'greet.md' });
+```
+
+`label` is required, non-empty, and is what errors name. `digest` is sha256 of
+the UTF-8 source bytes. Prefer `defineTemplate` when the text is an audit
+artifact.
+
+### Schema types
+
+- `text.required` - non-empty string, no NUL, no unpaired surrogate
+- `text.block` - same validate as `required`; name marks a large insert
+- `text.line` - like `required`, rejects `\n` and `\r`
+- `text.absolutePath` - like `required`, plus `path.isAbsolute` for the host
+
+Opt-in refusals (defaults stay verbatim):
+
+- `text.plain` - no control characters other than tab and newline, no bidi
+  controls, no zero-width or invisible formatting, no Unicode tag characters
+- `text.noFence` - no run of three or more backticks
+- `text.maxBytes(n)` / `text.maxChars(n)` - size budget, UTF-8 bytes or UTF-16
+  code units
+- `text.fencedBlock({ lang })` - the only descriptor that adds bytes: frames
+  the value in a fence one backtick longer than the longest run inside it. The
+  value itself is untouched.
+
+None of these is a prompt-injection defence.
+
+### Descriptor tooling
+
+A descriptor is `{ validate(value): boolean; format?(value): string }`.
+`format` normalises or frames, never escapes. Optional `reason(value): string`
+names a failure without echoing the value.
+
+- `defineType<T>(descriptor)` - identity at runtime; keeps the parameter type,
+  which a bare object literal would widen to `unknown`
+- `allOf(...descriptors)` - every member validates the original value; the
+  first failure supplies the reason; `format` steps run in argument order
+
+### Template guards
+
+```typescript
+defineTemplate('./generation.md', schema, {
+  guards: [guard.trailingNewline, guard.noPattern('no-vendor', /\bacme\b/i)],
+});
+```
+
+A guard is `{ name, validate(source), reason? }`, runs at define time before
+the placeholder scan, and validates the file without rewriting it. Failure is
+`TEMPLATE_REJECTED`. `guard.noPattern` refuses `g` and `y` regex flags.
+
+### Byte rules
+
+- Placeholder: `{{name}}` where name is `[A-Za-z_][A-Za-z0-9_]*`
+- `{{ name }}`, `{{}}`, `{{{name}}}`, unclosed `{{`: define-time error
+- `{{__proto__}}` is reserved; other prototype member names are ordinary
+- Single `{` / `}` are data
+- `{{{{` emits literal `{{`. To write `{{task}}`, write `{{{{task}}`
+- Files are UTF-8, LF only, no leading BOM
+- Unpaired surrogates are refused in the source and in every rendered value
+- Trailing newline preserved; values inserted verbatim; no rescan
+- Duplicate tokens allowed
+
+### Errors
+
+All errors are `MdRenderError` and name the template file. Placeholder errors
+report `path:line:column` and carry `line` / `column`.
+
+- `FILE_NOT_FOUND`, `FILE_UNREADABLE`, `INVALID_ENCODING`
+- `CRLF_REFUSED`, `BOM_REFUSED`, `MALFORMED_PLACEHOLDER`, `RESERVED_PLACEHOLDER`
+- `UNKNOWN_PLACEHOLDER`, `UNUSED_PARAMETER`, `INVALID_DESCRIPTOR`
+- `INVALID_OPTIONS`, `INVALID_PARAMS`, `TEMPLATE_REJECTED`
+- `INVALID_VALUE` (parameter + reason, never the value)
+
+## Not this package
+
+No conditionals, loops, partials, helpers, frontmatter, escaping, export I/O,
+markdown parsing, or chat/model/tool binding. Two templates, not a branch.
