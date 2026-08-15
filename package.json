@@ -1,16 +1,16 @@
 {
-  "name": "md-render",
+  "name": "prompt-render",
   "version": "0.1.0",
   "description": "Type-safe {{variable}} templating for prompt files with fail-closed substitution",
   "author": "bug3",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bug3/md-render.git"
+    "url": "git+https://github.com/bug3/prompt-render.git"
   },
   "bugs": {
-    "url": "https://github.com/bug3/md-render/issues"
+    "url": "https://github.com/bug3/prompt-render/issues"
   },
-  "homepage": "https://github.com/bug3/md-render#readme",
+  "homepage": "https://github.com/bug3/prompt-render#readme",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -42,12 +42,11 @@
   },
   "keywords": [
     "markdown",
-    "md-template",
-    "md-render",
     "template",
     "template-engine",
     "prompt",
     "prompt-template",
+    "prompt-render",
     "prompt-engineering",
     "llm",
     "llmops",

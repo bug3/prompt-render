@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest';
 import {
     defineStringTemplate,
     defineTemplate,
-    MdRenderError,
+    PromptRenderError,
     text,
 } from '../src/index';
 import { fixture } from './helpers';
@@ -29,7 +29,7 @@ describe('defineTemplate', () => {
             defineTemplate(fixture('simple.md'), {});
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('UNKNOWN_PLACEHOLDER');
             expect(error.token).toBe('name');
             expect(error.message).toContain(path.resolve(fixture('simple.md')));
@@ -44,7 +44,7 @@ describe('defineTemplate', () => {
             });
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('UNUSED_PARAMETER');
             expect(error.token).toBe('extra');
             expect(error.message).toContain(path.resolve(fixture('simple.md')));
@@ -58,7 +58,7 @@ describe('defineTemplate', () => {
             });
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('INVALID_DESCRIPTOR');
             expect(error.message).toContain('validate');
             expect(error.message).toContain(path.resolve(fixture('simple.md')));
@@ -74,7 +74,7 @@ describe('defineTemplate', () => {
             greet({ name: '' });
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('INVALID_VALUE');
             expect(error.token).toBe('name');
             expect(error.reason).toBe('empty string');
@@ -90,7 +90,7 @@ describe('defineTemplate', () => {
             guarded({ name: secret });
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.message).not.toContain(secret);
             expect(error.reason).toBe('rejected by policy');
         }
@@ -107,7 +107,7 @@ describe('defineTemplate', () => {
             reason: () => 'nope',
         };
         const greet = defineTemplate(fixture('simple.md'), { name: desc });
-        expect(() => greet({ name: 'Ada' })).toThrow(MdRenderError);
+        expect(() => greet({ name: 'Ada' })).toThrow(PromptRenderError);
         expect(formatted).toBe(false);
     });
 
@@ -128,7 +128,7 @@ describe('defineTemplate', () => {
             greet({ name: 'Ada', extra: 'x' } as { name: string });
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('UNUSED_PARAMETER');
             expect(error.message).toContain(path.resolve(fixture('simple.md')));
         }
@@ -142,7 +142,7 @@ describe('defineTemplate', () => {
             greet({} as { name: string });
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('INVALID_VALUE');
             expect(error.reason).toBe('missing parameter');
             expect(error.message).toContain(path.resolve(fixture('simple.md')));
@@ -158,8 +158,8 @@ describe('defineTemplate params', () => {
                 (greet as (params: unknown) => unknown)(bad);
                 expect.unreachable();
             } catch (err) {
-                const error = err as MdRenderError;
-                expect(error).toBeInstanceOf(MdRenderError);
+                const error = err as PromptRenderError;
+                expect(error).toBeInstanceOf(PromptRenderError);
                 expect(error.code).toBe('INVALID_PARAMS');
                 expect(error.message).toContain(path.resolve(fixture('simple.md')));
             }
@@ -183,7 +183,7 @@ describe('defineStringTemplate', () => {
             defineStringTemplate('\uFEFFhi {{n}}', { n: text.required }, { label: 'bom.md' });
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('BOM_REFUSED');
             expect(error.filePath).toBe('bom.md');
         }
@@ -194,7 +194,7 @@ describe('defineStringTemplate', () => {
             defineStringTemplate('a\r\n{{n}}', { n: text.required }, { label: 'cr.md' });
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('CRLF_REFUSED');
             expect(error.filePath).toBe('cr.md');
         }
@@ -205,7 +205,7 @@ describe('defineStringTemplate', () => {
             defineStringTemplate('{{n}}', { n: text.required }, { label: '' });
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('INVALID_OPTIONS');
             expect(error.message).toContain('non-empty label');
         }
@@ -222,7 +222,7 @@ describe('defineStringTemplate', () => {
             defineStringTemplate('a\uD800 {{n}}', { n: text.required }, { label: 'sur.md' });
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('INVALID_ENCODING');
             expect(error.message).toContain('sur.md');
         }

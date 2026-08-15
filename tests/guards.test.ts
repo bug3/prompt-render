@@ -4,7 +4,7 @@ import {
     defineStringTemplate,
     defineTemplate,
     guard,
-    MdRenderError,
+    PromptRenderError,
     text,
 } from '../src/index';
 import { fixture } from './helpers';
@@ -26,7 +26,7 @@ describe('guard.trailingNewline', () => {
             });
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('TEMPLATE_REJECTED');
             expect(error.guard).toBe('trailing-newline');
             expect(error.reason).toBe('does not end with a newline');
@@ -52,7 +52,7 @@ describe('guard.noPattern', () => {
             });
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('TEMPLATE_REJECTED');
             expect(error.guard).toBe('no-vendor');
             expect(error.reason).toBe('names a vendor');
@@ -69,7 +69,7 @@ describe('guard.noPattern', () => {
     });
 
     it('refuses a stateful regex', () => {
-        expect(() => guard.noPattern('g', /x/g)).toThrow(MdRenderError);
+        expect(() => guard.noPattern('g', /x/g)).toThrow(PromptRenderError);
         expect(() => guard.noPattern('y', /x/y)).toThrow('stateful regex');
         expect(() => guard.noPattern('', /x/)).toThrow('non-empty name');
     });
@@ -88,7 +88,7 @@ describe('guards option', () => {
         expect(() => defineStringTemplate('{{v}}\n', { v: text.required }, {
             label: 'order.md',
             guards: [record('first', true), record('second', false), record('third', true)],
-        })).toThrow(MdRenderError);
+        })).toThrow(PromptRenderError);
         expect(calls).toEqual(['first', 'second']);
     });
 
@@ -100,7 +100,7 @@ describe('guards option', () => {
             });
             expect.unreachable();
         } catch (err) {
-            expect((err as MdRenderError).code).toBe('TEMPLATE_REJECTED');
+            expect((err as PromptRenderError).code).toBe('TEMPLATE_REJECTED');
         }
     });
 

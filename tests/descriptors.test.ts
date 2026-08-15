@@ -3,7 +3,7 @@ import {
     allOf,
     defineStringTemplate,
     defineType,
-    MdRenderError,
+    PromptRenderError,
     text,
 } from '../src/index';
 
@@ -61,8 +61,8 @@ describe('text.maxBytes / text.maxChars', () => {
     });
 
     it('refuses a nonsense limit at construction time', () => {
-        expect(() => text.maxBytes(0)).toThrow(MdRenderError);
-        expect(() => text.maxChars(-1)).toThrow(MdRenderError);
+        expect(() => text.maxBytes(0)).toThrow(PromptRenderError);
+        expect(() => text.maxChars(-1)).toThrow(PromptRenderError);
         expect(() => text.maxBytes(1.5)).toThrow('positive integer');
     });
 });
@@ -93,7 +93,7 @@ describe('text.fencedBlock', () => {
     });
 
     it('refuses an invalid lang at construction time', () => {
-        expect(() => text.fencedBlock({ lang: 'js fake' })).toThrow(MdRenderError);
+        expect(() => text.fencedBlock({ lang: 'js fake' })).toThrow(PromptRenderError);
         expect(() => text.fencedBlock({ lang: '```' })).toThrow('fencedBlock');
     });
 });
@@ -122,7 +122,7 @@ describe('allOf', () => {
     });
 
     it('refuses an empty or malformed list', () => {
-        expect(() => allOf()).toThrow(MdRenderError);
+        expect(() => allOf()).toThrow(PromptRenderError);
         expect(() => allOf({ nope: true } as never)).toThrow('validate');
     });
 });

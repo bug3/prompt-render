@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { MdRenderError } from '../src/errors';
+import { PromptRenderError } from '../src/errors';
 import { digestSource } from '../src/digest';
 import { loadTemplateFile } from '../src/load';
 import { fixture } from './helpers';
@@ -12,7 +12,7 @@ describe('loadTemplateFile', () => {
     let tmpDir: string;
 
     beforeEach(() => {
-        tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'md-render-'));
+        tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'prompt-render-'));
     });
 
     afterEach(() => {
@@ -42,7 +42,7 @@ describe('loadTemplateFile', () => {
             loadTemplateFile(missing);
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('FILE_NOT_FOUND');
             expect(error.filePath).toBe(path.resolve(missing));
             expect(error.message).toContain(path.resolve(missing));
@@ -54,7 +54,7 @@ describe('loadTemplateFile', () => {
             loadTemplateFile(tmpDir);
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('FILE_UNREADABLE');
             expect(error.message).toContain(path.resolve(tmpDir));
         }
@@ -67,7 +67,7 @@ describe('loadTemplateFile', () => {
             loadTemplateFile(filePath);
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('CRLF_REFUSED');
             expect(error.message).toContain(filePath);
         }
@@ -80,7 +80,7 @@ describe('loadTemplateFile', () => {
             loadTemplateFile(filePath);
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('BOM_REFUSED');
             expect(error.message).toContain(filePath);
         }
@@ -93,7 +93,7 @@ describe('loadTemplateFile', () => {
             loadTemplateFile(filePath);
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('INVALID_ENCODING');
             expect(error.message).toContain(filePath);
         }

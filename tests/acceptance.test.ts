@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest';
 import {
     defineStringTemplate,
     defineTemplate,
-    MdRenderError,
+    PromptRenderError,
     text,
 } from '../src/index';
 import { fixture } from './helpers';
@@ -61,7 +61,7 @@ describe('acceptance', () => {
             defineTemplate(fixture('simple.md'), {});
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('UNKNOWN_PLACEHOLDER');
             expect(error.message).toContain(file);
         }
@@ -73,7 +73,7 @@ describe('acceptance', () => {
             });
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('UNUSED_PARAMETER');
             expect(error.message).toContain(file);
         }
@@ -83,7 +83,7 @@ describe('acceptance', () => {
             greet({ name: '' });
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('INVALID_VALUE');
             expect(error.message).toContain(file);
         }
@@ -93,7 +93,7 @@ describe('acceptance', () => {
             defineTemplate(fixture('does-not-exist.md'), {});
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('FILE_NOT_FOUND');
             expect(error.message).toContain(missing);
         }
@@ -162,7 +162,7 @@ describe('acceptance', () => {
             tmpl({ v: 'lone \uD800 surrogate' });
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('INVALID_VALUE');
             expect(error.reason).toBe('contains an unpaired surrogate');
         }

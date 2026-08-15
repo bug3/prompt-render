@@ -1,8 +1,8 @@
-# md-render
+# prompt-render
 
 > Type-safe `{{variable}}` renderer for prompt files
 
-md-render is a TypeScript library for rendering plain-text template files with
+prompt-render is a TypeScript library for rendering plain-text template files with
 `{{token}}` substitution, schema validation at module load, and fail-closed
 behaviour. Values are inserted verbatim. The package does not parse markdown.
 
@@ -14,7 +14,7 @@ over the template file.
 ## Install
 
 ```bash
-npm install md-render
+npm install prompt-render
 ```
 
 ## API
@@ -22,7 +22,7 @@ npm install md-render
 ### defineTemplate
 
 ```typescript
-import { defineTemplate, text } from 'md-render';
+import { defineTemplate, text } from 'prompt-render';
 
 const prompt = defineTemplate('./generation.md', {
   task: text.required,
@@ -47,7 +47,7 @@ An optional third argument takes `{ guards }`.
 ### defineStringTemplate
 
 ```typescript
-import { defineStringTemplate, text } from 'md-render';
+import { defineStringTemplate, text } from 'prompt-render';
 
 const greet = defineStringTemplate('Hello {{name}}\n', {
   name: text.required,
@@ -115,7 +115,7 @@ the placeholder scan, and validates the file without rewriting it. Failure is
 
 ### Errors
 
-All errors are `MdRenderError` and name the template file. Placeholder errors
+All errors are `PromptRenderError` and name the template file. Placeholder errors
 report `path:line:column` and carry `line` / `column`.
 
 - `FILE_NOT_FOUND`, `FILE_UNREADABLE`, `INVALID_ENCODING`

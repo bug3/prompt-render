@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { MdRenderError } from '../src/errors';
+import { PromptRenderError } from '../src/errors';
 import { parseTemplate } from '../src/parse';
 
 describe('parseTemplate', () => {
@@ -30,12 +30,12 @@ describe('parseTemplate', () => {
     });
 
     it('throws on inner whitespace', () => {
-        expect(() => parseTemplate('{{ name }}', 'pad.md')).toThrow(MdRenderError);
+        expect(() => parseTemplate('{{ name }}', 'pad.md')).toThrow(PromptRenderError);
         try {
             parseTemplate('{{ name }}', 'pad.md');
         } catch (err) {
-            expect(err).toBeInstanceOf(MdRenderError);
-            const error = err as MdRenderError;
+            expect(err).toBeInstanceOf(PromptRenderError);
+            const error = err as PromptRenderError;
             expect(error.code).toBe('MALFORMED_PLACEHOLDER');
             expect(error.filePath).toBe('pad.md');
             expect(error.message).toContain('pad.md');
@@ -57,7 +57,7 @@ describe('parseTemplate', () => {
             parseTemplate('line one\nline two\nrun: ${{ github.sha }}\n', 'ci.md');
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('MALFORMED_PLACEHOLDER');
             expect(error.line).toBe(3);
             expect(error.column).toBe(7);
@@ -71,7 +71,7 @@ describe('parseTemplate', () => {
             parseTemplate('a {{__proto__}}', 'proto.md');
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('RESERVED_PLACEHOLDER');
             expect(error.token).toBe('__proto__');
             expect(error.message).toContain('proto.md:1:3');
@@ -89,7 +89,7 @@ describe('parseTemplate', () => {
             parseTemplate(`{{task${rest}`, 'open.md');
             expect.unreachable();
         } catch (err) {
-            const error = err as MdRenderError;
+            const error = err as PromptRenderError;
             expect(error.code).toBe('MALFORMED_PLACEHOLDER');
             expect(error.message).toContain('open.md');
             expect(error.message).toContain('Unclosed');

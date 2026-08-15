@@ -1,9 +1,9 @@
-# md-render
+# prompt-render
 
-[![CI](https://github.com/bug3/md-render/actions/workflows/ci.yml/badge.svg)](https://github.com/bug3/md-render/actions/workflows/ci.yml)
-[![npm version](https://img.shields.io/npm/v/md-render)](https://www.npmjs.com/package/md-render)
-[![license](https://img.shields.io/npm/l/md-render)](LICENSE)
-[![node](https://img.shields.io/node/v/md-render)](package.json)
+[![CI](https://github.com/bug3/prompt-render/actions/workflows/ci.yml/badge.svg)](https://github.com/bug3/prompt-render/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/prompt-render)](https://www.npmjs.com/package/prompt-render)
+[![license](https://img.shields.io/npm/l/prompt-render)](LICENSE)
+[![node](https://img.shields.io/node/v/prompt-render)](package.json)
 
 Type-safe `{{variable}}` templating for prompt files. Fail closed. Insert verbatim.
 
@@ -46,7 +46,7 @@ asked to frame; the value inside is still byte for byte.
 ## Installation
 
 ```bash
-npm install md-render
+npm install prompt-render
 ```
 
 Node 20 or newer.
@@ -72,7 +72,7 @@ Write result.json to {{outputDir}} matching this schema:
 Bind it at module load. Types are inferred from the descriptor map.
 
 ```typescript
-import { defineTemplate, text } from 'md-render';
+import { defineTemplate, text } from 'prompt-render';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -177,7 +177,7 @@ passes every one.
 | `text.maxChars(n)` | Values over `n` UTF-16 code units, the unit `String.length` uses. |
 
 ```typescript
-import { allOf, defineTemplate, text } from 'md-render';
+import { allOf, defineTemplate, text } from 'prompt-render';
 
 const evaluatorPrompt = defineTemplate(templatePath('evaluator.md'), {
     task: allOf(text.plain, text.maxBytes(8_000)),
@@ -222,7 +222,7 @@ Wrap it in `defineType<T>()` so the call site keeps its compile-time check: a
 bare object literal infers the parameter as `unknown`.
 
 ```typescript
-import { allOf, defineType, text } from 'md-render';
+import { allOf, defineType, text } from 'prompt-render';
 
 const noVendor = defineType<string>({
     validate: (val) => typeof val === 'string'
@@ -249,7 +249,7 @@ Descriptors guard values. Guards guard the template file itself, at module
 load, before the placeholder scan.
 
 ```typescript
-import { defineTemplate, guard, text } from 'md-render';
+import { defineTemplate, guard, text } from 'prompt-render';
 
 const noVendorName = guard.noPattern('no-vendor', /\b(openai|anthropic)\b/i, 'names a vendor');
 
@@ -270,7 +270,7 @@ because a stateful regex would make the check depend on call order.
 For tests and in-memory use. `label` is required and is what errors name.
 
 ```typescript
-import { defineStringTemplate, text } from 'md-render';
+import { defineStringTemplate, text } from 'prompt-render';
 
 const greet = defineStringTemplate('Hello {{name}}\n', {
     name: text.required,
@@ -307,7 +307,7 @@ answers "which prompt with which values". A run record wants both.
 
 ## Error messages
 
-Errors are `MdRenderError`. Every message names the template file. Validation
+Errors are `PromptRenderError`. Every message names the template file. Validation
 messages name the parameter and the reason. They do not echo the value.
 
 | Scenario | Code |
@@ -334,7 +334,7 @@ Malformed placeholder "{{ github.sha }}" at /prompts/ci.md:3:7. A name matches
 [A-Za-z_][A-Za-z0-9_]* with no inner whitespace. Write {{{{ to emit a literal {{.
 ```
 
-`MdRenderError` also carries `code`, `filePath`, `token`, `reason`, `guard`,
+`PromptRenderError` also carries `code`, `filePath`, `token`, `reason`, `guard`,
 and the underlying `cause` for filesystem failures. For an option that is
 wrong before any template exists (`text.maxBytes(0)`), `filePath` names the
 factory instead of a file.

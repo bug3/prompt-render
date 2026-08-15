@@ -9,13 +9,13 @@
 ## Reporting a Vulnerability
 
 If you discover a security vulnerability, please report it privately via
-[GitHub Security Advisories](https://github.com/bug3/md-render/security/advisories/new).
+[GitHub Security Advisories](https://github.com/bug3/prompt-render/security/advisories/new).
 
 Do not open a public issue for security vulnerabilities.
 
 ## Security Model
 
-md-render inserts parameter values byte for byte. There is no denylist and no
+prompt-render inserts parameter values byte for byte. There is no denylist and no
 escaping. That is required: a prompt renderer that mangles the caller's text
 is broken.
 

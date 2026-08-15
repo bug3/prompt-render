@@ -1,4 +1,4 @@
-export type MdRenderErrorCode =
+export type PromptRenderErrorCode =
     | 'FILE_NOT_FOUND'
     | 'FILE_UNREADABLE'
     | 'INVALID_ENCODING'
@@ -14,8 +14,8 @@ export type MdRenderErrorCode =
     | 'INVALID_VALUE'
     | 'TEMPLATE_REJECTED';
 
-export interface MdRenderErrorOptions {
-    readonly code: MdRenderErrorCode;
+export interface PromptRenderErrorOptions {
+    readonly code: PromptRenderErrorCode;
     readonly filePath: string;
     readonly message: string;
     readonly token?: string;
@@ -26,8 +26,8 @@ export interface MdRenderErrorOptions {
     readonly cause?: unknown;
 }
 
-export class MdRenderError extends Error {
-    readonly code: MdRenderErrorCode;
+export class PromptRenderError extends Error {
+    readonly code: PromptRenderErrorCode;
 
     readonly filePath: string;
 
@@ -41,9 +41,9 @@ export class MdRenderError extends Error {
 
     readonly column?: number;
 
-    constructor(options: MdRenderErrorOptions) {
+    constructor(options: PromptRenderErrorOptions) {
         super(options.message, { cause: options.cause });
-        this.name = 'MdRenderError';
+        this.name = 'PromptRenderError';
         this.code = options.code;
         this.filePath = options.filePath;
         this.token = options.token;
@@ -55,15 +55,15 @@ export class MdRenderError extends Error {
     }
 }
 
-export type FailExtra = Omit<MdRenderErrorOptions, 'code' | 'filePath' | 'message'>;
+export type FailExtra = Omit<PromptRenderErrorOptions, 'code' | 'filePath' | 'message'>;
 
 export function fail(
-    code: MdRenderErrorCode,
+    code: PromptRenderErrorCode,
     filePath: string,
     message: string,
     extra?: FailExtra,
 ): never {
-    throw new MdRenderError({
+    throw new PromptRenderError({
         code,
         filePath,
         message,
